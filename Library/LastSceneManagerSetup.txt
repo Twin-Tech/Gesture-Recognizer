@@ -1,0 +1,4 @@
+sceneSetups:
+- path: C:/Users/rajan/Downloads/Unity_Kinect-master/Unity_Kinect-master/Assets/Scenes/BodyParticles.unity
+  isLoaded: 1
+  isActive: 1
