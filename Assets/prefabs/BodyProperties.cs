@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class BodyProperties : MonoBehaviour {
 
+    public int noOfFrames = 0;
     public Boolean startGame = false;
     public Boolean InitializeObj = false;
     public int countinst = 0;
@@ -35,8 +36,14 @@ public class BodyProperties : MonoBehaviour {
     DateTime start, stop;
     TimeSpan timeTaken;
     bool timestarted = false;
+    int totalFrames = 0;
+    int rate;
+    public bool gestureTrue;
     // Use this for initialization
     void Start() {
+       
+        totalFrames = 55;
+        gestureTrue = false;
     }
 
     // Update is called once per frame
@@ -61,6 +68,7 @@ public class BodyProperties : MonoBehaviour {
                         leftarmLength /= NoOfInitializationFrame;
                         rightarmLength /= NoOfInitializationFrame;
                         CreateCoins();
+                        rate =Convert.ToInt32((0.75 * totalFrames) / totalInitial);
                     }
                 }
             }
@@ -75,9 +83,21 @@ public class BodyProperties : MonoBehaviour {
                 timestarted = true;
                 start = DateTime.Now;
             }
+            noOfFrames++;
+            checkGesture();
         }
     }
-
+  
+    public void checkGesture()
+    {
+        if (noOfFrames <= (rate * Noofcollisions))
+            gestureTrue = true;
+        else
+            gestureTrue = false;
+        GameObject statusBox = GameObject.Find("Text 1");
+        Text status = statusBox.GetComponent<Text>();
+        status.text = gestureTrue.ToString();
+    }
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.name.Equals("StartCircle")) {
@@ -109,11 +129,13 @@ public class BodyProperties : MonoBehaviour {
         {
             CalculateAccuracy();
             Noofcollisions = 0;
-            InitialCollisions = totalInitial;
+            InitialCollisions = 0;
             stop = DateTime.Now;
             timeTaken = stop.Subtract(start);
             start = DateTime.Now;
-            Debug.Log(timeTaken.TotalSeconds.ToString());
+            //Debug.Log(timeTaken.TotalSeconds.ToString());
+            //Debug.Log(noOfFrames.ToString());
+            noOfFrames = 0;
         }
     }
     public double CalculateDistanceByFormula(Windows.Kinect.Joint g1, Windows.Kinect.Joint g2)
@@ -135,7 +157,8 @@ public class BodyProperties : MonoBehaviour {
             acc = GameObject.Find("Text 2");
             Text abc = acc.GetComponent<Text>();
             accuracy = (Noofcollisions/totalcollisions) *100;
-            abc.text = accuracy.ToString();
+        abc.text = accuracy.ToString();
+            Debug.Log(accuracy.ToString());
     }
     public float FindHandLength(string hand)
     {
@@ -261,7 +284,7 @@ public class BodyProperties : MonoBehaviour {
             {
                 totalcollisions = float.Parse(node.FirstChild.InnerText);
             }
-            else if(jointname!="ValidAngle" && jointname!="GestureType")
+            else if(jointname!="ValidAngle" && jointname!="GestureType" && !jointname.Contains("Head"))
             {
                 if (jointname.Contains("Initial"))
                     totalInitial++;

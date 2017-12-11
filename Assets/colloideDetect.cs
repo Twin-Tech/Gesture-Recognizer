@@ -48,7 +48,7 @@ public class colloideDetect : MonoBehaviour {
                 else if (other.name.Contains("Initial") && started == true)
                 {
                     //if (lastcollided.Contains("Hand"))
-                        Debug.Log(lastcollided);
+                    Debug.Log(lastcollided);
                     started = false;
                     BP.Noofcollisions++;
                     BP.InitialCollisions++;
