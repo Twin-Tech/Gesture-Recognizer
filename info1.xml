@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<root>
+  <joint name="GestureType">
+    <type>Static</type>
+  </joint>
+<joint name="HandLength">
+	<length>0.5318</length>
+  </joint>
+<joint name="ShoulderWidth">
+	<length>0.318</length>
+  </joint>
+<joint name="HeadPos">
+	<length>1.09</length>
+</joint>
+<joint name="TotalCollisions">
+	<num>19</num>
+</joint>
+<joint name="AngleAdjust">
+	<length>-0.435</length>
+</joint>
+<joint name="HandRightInitial.0">
+    <x>0.655</x>
+    <y>0.632</y>
+    <z>2.5</z>
+    <angle>69.92</angle>
+  </joint>
+</root>

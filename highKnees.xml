@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<root>
+<joint name="HandLength">
+	<length>0.5318</length>
+  </joint>
+<joint name="ShoulderWidth">
+	<length>0.318</length>
+  </joint>
+<joint name="HeadPos">
+	<length>1.09</length>
+</joint>
+<joint name="AngleAdjust">
+	<length>-0.205</length>
+</joint>
+<joint name="TotalCollisions">
+	<num>6</num>
+</joint>
+<joint name="FootLeftInitial">
+    <x>-0.131</x>
+    <y>-0.205</y>
+    <z>2.5</z>
+  </joint> 
+<joint name="FootLeftMax">
+    <x>-0.017</x>
+    <y>-0.194</y>
+    <z>2.32</z>
+  </joint>
+<joint name="FootRightInitial">
+    <x>0.091</x>
+    <y>-0.187</y>
+    <z>2.5</z>
+  </joint> 
+<joint name="FootRightMax">
+    <x>0.031</x>
+    <y>-0.325</y>
+    <z>2.27</z>
+  </joint>
+<joint name="KneeLeftInitial">
+    <x>-0.135</x>
+    <y>-0.025</y>
+    <z>2.5</z>
+  </joint> 
+<joint name="KneeLeftMax">
+    <x>-0.025</x>
+    <y>0.167</y>
+    <z>2.31</z>
+  </joint>
+<joint name="KneeRightInitial">
+    <x>0.091</x>
+    <y>-0.027</y>
+    <z>2.5</z>
+  </joint> 
+<joint name="KneeRightMax">
+    <x>0.059</x>
+    <y>0.093</y>
+    <z>2.27</z>
+  </joint>
+
+
+</root>

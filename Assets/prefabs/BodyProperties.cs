@@ -5,9 +5,8 @@ using UnityEngine;
 using System.Xml;
 using UnityEngine.UI;
 
-public class BodyProperties : MonoBehaviour {
-
-    public int noOfFrames = 0;
+public class BodyProperties : MonoBehaviour
+{
     public Boolean startGame = false;
     public Boolean InitializeObj = false;
     public int countinst = 0;
@@ -15,39 +14,21 @@ public class BodyProperties : MonoBehaviour {
     public float leftarmLength = 0.0f;
     public float rightarmLength = 0.0f;
     int NoOfInitializationFrame = 100;
-    public float handlengthdelta = 0.0f;
-    public float shoulderdelta = 0.0f;
-    public float heightdelta = 0.0f;
-    public float angleadjust = 0.0f;
-    public int NoOfCoins = 0;
     public bool createdagain = false;
     public float rightFootHeight = Single.PositiveInfinity;
     public float leftFootHeight = Single.PositiveInfinity;
-    double[] AnglesOfHand = { 0.0, 30.0, 60.0, 90.0, 120.0, 150.0, 180.0 };
-    public float Noofcollisions = 0;
-    public float totalcollisions = 0;
-    public string lastcolider = "";
-    public bool started = false;
-    //public Text acc;
-    public GameObject acc;
-    public float accuracy;
-    public int totalInitial = 0;
-    public int InitialCollisions = 0;
-    DateTime start, stop;
-    TimeSpan timeTaken;
-    bool timestarted = false;
-    int totalFrames = 0;
-    int rate;
-    public bool gestureTrue;
+    public GeneralData GD;
+    private SecretData SD;
     // Use this for initialization
-    void Start() {
-       
-        totalFrames = 55;
-        gestureTrue = false;
+    void Start()
+    {
+        GD = new GeneralData();
+        SD = new SecretData();
     }
 
     // Update is called once per frame
-    void Update() {
+    void Update()
+    {
         if (startGame)
         {
             if (!InitializeObj)
@@ -68,39 +49,37 @@ public class BodyProperties : MonoBehaviour {
                         leftarmLength /= NoOfInitializationFrame;
                         rightarmLength /= NoOfInitializationFrame;
                         CreateCoins();
-                        rate =Convert.ToInt32((0.75 * totalFrames) / totalInitial);
+                        SD.rate = Convert.ToInt32((0.75 * SD.totalFrames) / SD.totalInitial);
                     }
                 }
             }
-            else {
-                 if(NoOfCoins == 0 && createdagain==false)
-                {
-                   // createAgain();
-                }
-            }
-            if(InitialCollisions==totalInitial && timestarted==false)
+            if (SD.InitialCollisions == SD.totalInitial && SD.timestarted == false)
             {
-                timestarted = true;
-                start = DateTime.Now;
+                SD.timestarted = true;
+                SD.start = DateTime.Now;
             }
-            noOfFrames++;
+            SD.noOfFrames++;
             checkGesture();
         }
     }
-  
+
     public void checkGesture()
     {
-        if (noOfFrames <= (rate * Noofcollisions))
-            gestureTrue = true;
-        else
-            gestureTrue = false;
+        if (SD.gestureType == "Dynamic")
+        {
+            if (SD.noOfFrames <= (SD.rate * SD.Noofcollisions))
+                GD.gestureTrue = true;
+            else
+                GD.gestureTrue = false;
+        }
         GameObject statusBox = GameObject.Find("Text 1");
         Text status = statusBox.GetComponent<Text>();
-        status.text = gestureTrue.ToString();
+        status.text = GD.gestureTrue.ToString();
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.name.Equals("StartCircle")) {
+        if (other.gameObject.name.Equals("StartCircle"))
+        {
             startGame = true;
             other.enabled = false;
         }
@@ -125,17 +104,22 @@ public class BodyProperties : MonoBehaviour {
 
     public void ResetColliders()
     {
-        if(InitialCollisions>=(2*totalInitial))
+        if (SD.InitialCollisions >= (2 * SD.totalInitial))
         {
             CalculateAccuracy();
-            Noofcollisions = 0;
-            InitialCollisions = 0;
-            stop = DateTime.Now;
-            timeTaken = stop.Subtract(start);
-            start = DateTime.Now;
-            //Debug.Log(timeTaken.TotalSeconds.ToString());
-            //Debug.Log(noOfFrames.ToString());
-            noOfFrames = 0;
+            SD.Noofcollisions =  SD.totalInitial;
+            SD.InitialCollisions = SD.totalInitial;
+            SD.stop = DateTime.Now;
+            SD.timeTaken = SD.stop.Subtract(SD.start);
+            SD.start = DateTime.Now;
+            GD.totalTime = SD.timeTaken.TotalSeconds.ToString();
+            SD.noOfFrames = 0;
+            GameObject skel = GameObject.Find("skeleton");
+            colloideDetect[] cd = skel.GetComponentsInChildren<colloideDetect>();
+            foreach (var c in cd)
+            {
+                c.flag = true;
+            }
         }
     }
     public double CalculateDistanceByFormula(Windows.Kinect.Joint g1, Windows.Kinect.Joint g2)
@@ -153,12 +137,12 @@ public class BodyProperties : MonoBehaviour {
 
     public void CalculateAccuracy()
     {
-       
-            acc = GameObject.Find("Text 2");
-            Text abc = acc.GetComponent<Text>();
-            accuracy = (Noofcollisions/totalcollisions) *100;
-        abc.text = accuracy.ToString();
-            Debug.Log(accuracy.ToString());
+
+        SD.acc = GameObject.Find("Text 2");
+        Text abc = SD.acc.GetComponent<Text>();
+        GD.accuracy = (SD.Noofcollisions / SD.totalcollisions) * 100;
+        abc.text = GD.accuracy.ToString();
+        Debug.Log(GD.accuracy.ToString());
     }
     public float FindHandLength(string hand)
     {
@@ -183,7 +167,6 @@ public class BodyProperties : MonoBehaviour {
             default:
                 return -1.0f;
         }
-        //return 0.0f;
     }
 
     public void FindLegHeightFromGround(string leg)
@@ -206,40 +189,18 @@ public class BodyProperties : MonoBehaviour {
                 break;
         }
     }
-
-    /*  public void CreateCoins()
-      {
-          GameObject leftShoulder = transform.Find("ShoulderLeft").gameObject;
-          GameObject rightShoulder = transform.Find("ShoulderRight").gameObject;
-
-          foreach (double angle in AnglesOfHand)
-          {
-              GameObject lcoin = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-              lcoin.transform.position = PlaceCoinsIn2D(angle, leftShoulder.transform.position, leftarmLength + 0.2f, -90);
-              lcoin.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-              lcoin.name = "lcoin" + angle.ToString();
-              SphereCollider lsc = lcoin.AddComponent<SphereCollider>();
-              lsc.isTrigger = true;
-              Rigidbody lrb = lcoin.AddComponent<Rigidbody>();
-              lrb.useGravity = false;
-              lcoin.tag = "coins";
-              NoOfCoins++;
-
-
-              GameObject rcoin = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-              rcoin.transform.position = PlaceCoinsIn2D(angle, rightShoulder.transform.position, rightarmLength + 0.15f, 90);
-              rcoin.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-              rcoin.name = "rcoin" + angle.ToString();
-              SphereCollider rsc = rcoin.AddComponent<SphereCollider>();
-              rsc.isTrigger = true;
-              Rigidbody rrb = rcoin.AddComponent<Rigidbody>();
-              rrb.useGravity = false;
-              rcoin.tag = "coins";
-              NoOfCoins++;
-          }
-
-      }*/
-
+    public string getType()
+    {
+        return SD.gestureType;
+    }
+    public void increaseInitial()
+    {
+        SD.InitialCollisions++;
+    }
+    public void increaseCollisions()
+    {
+        SD.Noofcollisions++;
+    }
     public void CreateCoins()
     {
         float realhandlength = 0.0f;
@@ -260,34 +221,42 @@ public class BodyProperties : MonoBehaviour {
         realhandlength = (rightarmLength + leftarmLength) / 2;
         realfootlevel = jpfoot.position.y;
         XmlDocument doc = new XmlDocument();
-        doc.Load("C:\\Users\\rajan\\Desktop\\info.xml");
-        foreach(XmlNode node in doc.DocumentElement)
+        doc.Load("C:\\Users\\Admin\\Desktop\\info.xml");
+        foreach (XmlNode node in doc.DocumentElement)
         {
             string jointname = node.Attributes[0].InnerText;
             if (jointname == "HandLength")
             {
-                handlengthdelta =  realhandlength - float.Parse(node.ChildNodes[0].InnerText);
+                SD.handlengthdelta = realhandlength - float.Parse(node.ChildNodes[0].InnerText);
             }
             else if (jointname == "HeadPos")
             {
-                heightdelta = realheight - float.Parse(node.ChildNodes[0].InnerText);
+                SD.heightdelta = realheight - float.Parse(node.ChildNodes[0].InnerText);
             }
             else if (jointname == "ShoulderWidth")
             {
-                shoulderdelta = ( realshoulder - float.Parse(node.FirstChild.InnerText)) / 2;
+                SD.shoulderdelta = (realshoulder - float.Parse(node.FirstChild.InnerText)) / 2;
             }
-            else if(jointname == "AngleAdjust")
+            else if (jointname == "AngleAdjust")
             {
-                angleadjust = float.Parse(node.FirstChild.InnerText) - realfootlevel;
+                SD.angleadjust = float.Parse(node.FirstChild.InnerText) - realfootlevel;
             }
             else if (jointname == "TotalCollisions")
             {
-                totalcollisions = float.Parse(node.FirstChild.InnerText);
+                SD.totalcollisions = float.Parse(node.FirstChild.InnerText);
             }
-            else if(jointname!="ValidAngle" && jointname!="GestureType" && !jointname.Contains("Head"))
+            else if (jointname == "GestureType")
+            {
+                SD.gestureType = node.FirstChild.InnerText;
+            }
+            else if (jointname == "TotalFrames")
+            {
+                SD.totalFrames = Convert.ToInt32(node.FirstChild.InnerText);
+            }
+            else if (jointname != "ValidAngle")
             {
                 if (jointname.Contains("Initial"))
-                    totalInitial++;
+                    SD.totalInitial++;
                 float x, y, z;
                 x = float.Parse(node.ChildNodes[0].InnerText);
                 y = float.Parse(node.ChildNodes[1].InnerText);
@@ -298,31 +267,31 @@ public class BodyProperties : MonoBehaviour {
                     if (jointname.Contains("Right"))
                     {
                         if (angle < 90)
-                            y = y - angleadjust + heightdelta + (handlengthdelta * Math.Abs(Convert.ToSingle(Math.Cos(ConvertDegreeToRadian(angle)))));
+                            y = y - SD.angleadjust + SD.heightdelta - (SD.handlengthdelta * Math.Abs(Convert.ToSingle(Math.Cos(ConvertDegreeToRadian(angle)))));
                         else
-                            y = y - angleadjust + heightdelta - (handlengthdelta * Math.Abs(Convert.ToSingle(Math.Cos(ConvertDegreeToRadian(angle)))));
-                        x += shoulderdelta + (handlengthdelta * Math.Abs(Convert.ToSingle(Math.Sin(ConvertDegreeToRadian(angle)))));
+                            y = y - SD.angleadjust + SD.heightdelta + (SD.handlengthdelta * Math.Abs(Convert.ToSingle(Math.Cos(ConvertDegreeToRadian(angle)))));
+                        x += SD.shoulderdelta + (SD.handlengthdelta * Math.Abs(Convert.ToSingle(Math.Sin(ConvertDegreeToRadian(angle)))));
                     }
                     else if (jointname.Contains("Left"))
                     {
                         if (angle < 90)
-                            y = y - angleadjust + heightdelta + (handlengthdelta * Math.Abs(Convert.ToSingle(Math.Cos(ConvertDegreeToRadian(angle)))));
+                            y = y - SD.angleadjust + SD.heightdelta - (SD.handlengthdelta * Math.Abs(Convert.ToSingle(Math.Cos(ConvertDegreeToRadian(angle)))));
                         else
-                            y = y - angleadjust + heightdelta - (handlengthdelta * Math.Abs(Convert.ToSingle(Math.Cos(ConvertDegreeToRadian(angle)))));
-                        x = x - shoulderdelta - (handlengthdelta * Math.Abs(Convert.ToSingle(Math.Sin(ConvertDegreeToRadian(angle)))));
+                            y = y - SD.angleadjust + SD.heightdelta + (SD.handlengthdelta * Math.Abs(Convert.ToSingle(Math.Cos(ConvertDegreeToRadian(angle)))));
+                        x = x - SD.shoulderdelta - (SD.handlengthdelta * Math.Abs(Convert.ToSingle(Math.Sin(ConvertDegreeToRadian(angle)))));
                     }
                 }
-                else if(jointname.Contains("Head"))
+                else if (jointname.Contains("Head"))
                 {
-                    y = y - angleadjust + heightdelta;
+                    y = y - SD.angleadjust + SD.heightdelta;
                 }
-                else if(jointname.Contains("Foot"))
+                else if (jointname.Contains("Foot"))
                 {
-                    y = y - angleadjust;
+                    y = y - SD.angleadjust;
                     if (jointname.Contains("Right"))
-                        x += shoulderdelta;
+                        x += SD.shoulderdelta;
                     else if (jointname.Contains("Left"))
-                        x -= shoulderdelta;
+                        x -= SD.shoulderdelta;
                 }
                 GameObject coin = GameObject.CreatePrimitive(PrimitiveType.Capsule);
                 coin.transform.position = new Vector3(x, y, z);
@@ -335,7 +304,7 @@ public class BodyProperties : MonoBehaviour {
                 /*Rigidbody rb = coin.AddComponent<Rigidbody>();
                 rb.useGravity = false;*/
                 //coin.tag = jointname;
-                NoOfCoins++;    
+                SD.NoOfCoins++;
             }
         }
     }
@@ -366,8 +335,8 @@ public class BodyProperties : MonoBehaviour {
 
         float rightLegDiff = rightLegHeight - rightFootHeight;
         float leftLegDiff = leftLegHeight - leftFootHeight;
-        
-        if(rightLegDiff >= 0.02f && leftLegDiff >= 0.02f)
+
+        if (rightLegDiff >= 0.02f && leftLegDiff >= 0.02f)
         {
             return true;
         }
@@ -376,14 +345,14 @@ public class BodyProperties : MonoBehaviour {
             return false;
         }
     }
-   /* public double getangle()
-    {
-        GameObject rightElbow = transform.Find("ElbowRight").gameObject;
-        GameObject rightShoulder = transform.Find("ShoulderRight").gameObject;
-        GameObject rightWrist = transform.Find("WristRight").gameObject;
-        double armangle = CalculateAngle(rightShoulder, rightElbow, rightWrist);
-        return armangle;
-    }*/
+    /* public double getangle()
+     {
+         GameObject rightElbow = transform.Find("ElbowRight").gameObject;
+         GameObject rightShoulder = transform.Find("ShoulderRight").gameObject;
+         GameObject rightWrist = transform.Find("WristRight").gameObject;
+         double armangle = CalculateAngle(rightShoulder, rightElbow, rightWrist);
+         return armangle;
+     }*/
     public float findDistanceBtwnFoots()
     {
         GameObject leftFoot = transform.Find("FootLeft").gameObject;
@@ -417,16 +386,16 @@ public class BodyProperties : MonoBehaviour {
         bool righthand = false;
         if ((leftarmangle > 150 && leftarmangle < 200) && (leftarmshoulderangle > 240 && leftarmshoulderangle < 300))
         {
-             lefthand = true;
+            lefthand = true;
         }
 
         if ((rightarmangle > 150 && rightarmangle < 200) && (rightarmshoulderangle > 240 && rightarmshoulderangle < 300))
         {
-             righthand = true;
+            righthand = true;
         }
 
         return lefthand && righthand;
 
-    } 
+    }
 
 }

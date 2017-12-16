@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<root>
+<joint name="GestureType">
+    	<type>Dynamic</type>
+</joint>
+<joint name="TotalFrames">
+    	<type>55</type>
+</joint>
+<joint name="HandLength">
+	<length>0.5318</length>
+  </joint>
+<joint name="ShoulderWidth">
+	<length>0.318</length>
+  </joint>
+<joint name="HeadPos">
+	<length>1.09</length>
+</joint>
+<joint name="TotalCollisions">
+	<num>19</num>
+</joint>
+<joint name="AngleAdjust">
+	<length>-0.435</length>
+</joint>
+<joint name="ValidAngle" forJoint="HandRight" start="ShoulderRight" mid="ElbowRight" end="WristRight">
+	<angle>180</angle>
+</joint>
+<joint name="ValidAngle" forJoint="HandLeft" start="ShoulderLeft" mid="ElbowLeft" end="WristLeft">
+	<angle>180</angle>
+</joint>
+<joint name="HandRightInitial.0">
+    <x>0.174</x>
+    <y>0.275</y>
+    <z>2.5</z>
+    <angle>2.9</angle>
+  </joint> 
+<joint name="HandRight.1">
+    <x>0.655</x>
+    <y>0.632</y>
+    <z>2.5</z>
+    <angle>69.92</angle>
+  </joint>
+<joint name="HandRight.2">
+    <x>0.583</x>
+    <y>1.230</y>
+    <z>2.5</z>
+    <angle>137.91</angle>
+  </joint>
+<joint name="HandRight.3">
+    <x>0.248</x>
+    <y>1.334</y>
+    <z>2.5</z>
+    <angle>174.90</angle>
+  </joint>
+
+<joint name="HandLeftInitial.0">
+    <x>-0.191</x>
+    <y>0.289</y>
+    <z>2.5</z>
+    <angle>6.95</angle>
+  </joint> 
+<joint name="HandLeft.1">
+    <x>-0.599</x>
+    <y>0.691</y>
+    <z>2.5</z>
+    <angle>74.51</angle>
+  </joint> 
+<joint name="HandLeft.2">
+    <x>-0.451</x>
+    <y>1.262</y>
+    <z>2.5</z>
+    <angle>143.54</angle>
+  </joint>
+<joint name="HandLeft.3">
+    <x>-0.132</x>
+    <y>1.334</y>
+    <z>2.5</z>
+    <angle>179.32</angle>
+  </joint>
+<joint name="HeadInitial.0">
+    <x>0</x>
+    <y>1.2686</y>
+    <z>2.5</z>
+  </joint> 
+<joint name="Head.1">
+    <x>0</x>
+    <y>1.0363</y>
+    <z>2.5</z>
+  </joint>
+<joint name="FootLeftInitial.0">
+    <x>-0.149</x>
+    <y>-0.435</y>
+    <z>2.5</z>
+  </joint> 
+<joint name="FootLeft.1">
+    <x>-0.353</x>
+    <y>-0.303</y>
+    <z>2.5</z>
+  </joint>
+<joint name="FootRightInitial.0">
+    <x>0.147</x>
+    <y>-0.387</y>
+    <z>2.5</z>
+  </joint> 
+<joint name="FootRight.1">
+    <x>0.376</x>
+    <y>-0.346</y>
+    <z>2.5</z>
+  </joint>
+</root>

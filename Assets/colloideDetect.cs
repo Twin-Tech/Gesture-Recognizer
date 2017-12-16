@@ -3,69 +3,99 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Xml;
 
-public class colloideDetect : MonoBehaviour {
+public class colloideDetect : MonoBehaviour
+{
 
     public bool started = false;
-    public string lastcollided = " ";
+    float cur = 0.0f;
+    public float lastcollided =-1;
     public GameObject start, mid, end;
     public float validangle;
     public bool anglevalid = true;
-    bool initialised = false;
+    public bool flag=false;
     void OnTriggerEnter(Collider other)
     {
-
-        if (other.gameObject.name.Contains(this.name) && (other.name.CompareTo(lastcollided)>=0 || lastcollided.Contains("Initial")))
+        if (other.gameObject.name.Contains(this.name))
         {
-            XmlDocument doc = new XmlDocument();
-            doc.Load("C:\\Users\\rajan\\Desktop\\info.xml");
-            foreach(XmlNode node in doc.DocumentElement)
+            string[] currr = other.name.Split('.');
+            cur = float.Parse(currr[1]);
+            BodyProperties BP = transform.parent.gameObject.GetComponent<BodyProperties>();
+            if ((cur > lastcollided || other.name.Contains("Initial")))
             {
-                if(node.Attributes[0].InnerText=="ValidAngle" && node.Attributes[1].InnerText==this.name)
+                XmlDocument doc = new XmlDocument();
+                doc.Load("C:\\Users\\Admin\\Desktop\\info.xml");
+                foreach (XmlNode node in doc.DocumentElement)
                 {
-                    start = GameObject.Find(node.Attributes[2].InnerText);
-                    mid = GameObject.Find(node.Attributes[3].InnerText);
-                    end = GameObject.Find(node.Attributes[4].InnerText);
-                    validangle = float.Parse(node.ChildNodes[0].InnerText);
-                    Vector3 a = start.transform.position - mid.transform.position;
-                    Vector3 b = end.transform.position - mid.transform.position;
-                    if (Vector3.Angle(a, b) > validangle - 40 && Vector3.Angle(a, b) < validangle + 40)
-                        anglevalid = true;
-                    else
+                    if (node.Attributes[0].InnerText == "ValidAngle" && node.Attributes[1].InnerText == this.name)
                     {
-                        anglevalid = false;
-                        break;
+                        start = GameObject.Find(node.Attributes[2].InnerText);
+                        mid = GameObject.Find(node.Attributes[3].InnerText);
+                        end = GameObject.Find(node.Attributes[4].InnerText);
+                        validangle = float.Parse(node.ChildNodes[0].InnerText);
+                        Vector3 a = start.transform.position - mid.transform.position;
+                        Vector3 b = end.transform.position - mid.transform.position;
+                        if (Vector3.Angle(a, b) > validangle - 40 && Vector3.Angle(a, b) < validangle + 40)
+                            anglevalid = true;
+                        else
+                        {
+                            anglevalid = false;
+                            break;
+                        }
                     }
                 }
+                if (lastcollided != cur && anglevalid && BP.getType() == "Dynamic")
+                {
+                    if (other.name.Contains("Initial") && started == false)
+                    {
+                        started = true;
+                        flag = true;
+                        BP.increaseInitial();
+                        BP.increaseCollisions();
+                        lastcollided = cur;
+                        Debug.Log(other.name);
+                    }
+                    else if (other.name.Contains("Initial") && started == true)
+                    {
+                        flag = false;
+                        //if (lastcollided.Contains("Hand"))
+                        Debug.Log(other.name);
+                        BP.increaseCollisions();
+                        BP.increaseInitial();
+                        BP.ResetColliders();
+                        lastcollided = 0;
+                    }
+                    else if(flag)
+                    {
+                        BP.increaseCollisions();
+                        lastcollided = cur;
+                        //if(lastcollided.Contains("Hand"))
+                        Debug.Log(other.name);
+                    }
+
+                }
+                else if (BP.getType() == "Static")
+                {
+                    BP.GD.gestureTrue = true;
+                }
             }
+        }
+    }
+    void OnTriggerStay(Collider other)
+    {
+        if (other.gameObject.name.Contains(this.name))
+        {
             BodyProperties BP = transform.parent.gameObject.GetComponent<BodyProperties>();
-           if(lastcollided!=other.name && anglevalid)
-            {
-                if (other.name.Contains("Initial") && started == false)
-                {
-                    started = true;
-                    BP.InitialCollisions++;
-                }
-                else if (other.name.Contains("Initial") && started == true)
-                {
-                    //if (lastcollided.Contains("Hand"))
-                    Debug.Log(lastcollided);
-                    started = false;
-                    BP.Noofcollisions++;
-                    BP.InitialCollisions++;
-                    BP.ResetColliders();
-                }
-                if(started)
-                {
-                    BP.Noofcollisions++;
-                    if (other.name.EndsWith("9"))
-                        lastcollided = other.name.Replace("9", "0");
-                    else
-                        lastcollided = other.name;
-                    //if(lastcollided.Contains("Hand"))
-                        Debug.Log(lastcollided);
-                }
-             
-            }
+            if (BP.getType() == "Static")
+                BP.GD.gestureTrue = true;
+        }
+    }
+    void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.name.Contains(this.name))
+        {
+            BodyProperties BP = transform.parent.gameObject.GetComponent<BodyProperties>();
+            if (BP.getType() == "Static")
+                BP.GD.gestureTrue = false;
         }
     }
 }
